@@ -32,12 +32,8 @@ Map.is one of the functions provided by go_iter.
 
 	cb := func(c1, c2 Chan) Chan {
 		for person := range c1 {
-			if person.(Person).Age > 18 {
-				p := Person{
-					strings.ToUpper(person.(Person).Name),
-					person.(Person).Age}
-				c2 <- p
-			}
+			//... some fitering action here:
+			c2 <- filtered_item
 		}
 		return c2
 	}
