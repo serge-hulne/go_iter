@@ -17,6 +17,9 @@ See examples for more information:
 
 Partial example (code snippet) :
 
+In the example, data coming from an input channel are mapped/filtered, using Map(), to an output channel.
+Map.is one of the functions provided by go_iter.
+
 ```
 	input_channel := input()
 
