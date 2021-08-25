@@ -1,4 +1,4 @@
-module github.com/serge-hulne/go_iter
+module go_iter
 
 go 1.17
 
