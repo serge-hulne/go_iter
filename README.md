@@ -21,13 +21,13 @@ In the example, data coming from an input channel are mapped/filtered, using Map
 Map.is one of the functions provided by go_iter.
 
 ```
+	//... User defined type
 	type Person struct {
 		Name string
 		Age  int
 	}
 	
 	//... Send list of "Persons in a channel"
-	
 	input_channel := input()
 
 	for item := range input_channel {
