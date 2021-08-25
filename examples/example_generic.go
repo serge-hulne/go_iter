@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	//. "iter_generic"
 	. "github.com/serge-hulne/go_iter"
 
 	"strings"
