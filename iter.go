@@ -1,4 +1,4 @@
-package iter_generic
+package go_iter
 
 type Generic interface{}
 
