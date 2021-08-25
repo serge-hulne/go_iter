@@ -8,5 +8,5 @@ Defines:
 - Reduce
 - Range
 - Take on collections of integers.
-- 
+
 Can easily be extended/generalized to all collection types.
