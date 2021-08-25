@@ -21,6 +21,13 @@ In the example, data coming from an input channel are mapped/filtered, using Map
 Map.is one of the functions provided by go_iter.
 
 ```
+	type Person struct {
+		Name string
+		Age  int
+	}
+	
+	//... Send list of "Persons in a channel"
+	
 	input_channel := input()
 
 	for item := range input_channel {
@@ -28,11 +35,13 @@ Map.is one of the functions provided by go_iter.
 	}
 
 	fmt.Println("- - -")
+	
+	//... Refresh channel
 	input_channel = input()
 
 	cb := func(c1, c2 Chan) Chan {
 		for person := range c1 {
-			//... some fitering action here:
+			//... Some fitering action here:
 			c2 <- filtered_item
 		}
 		return c2
