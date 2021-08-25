@@ -9,7 +9,7 @@ Defines:
 - Map
 - Reduce
 - Range
-- Take on collections of integers.
+- Take.
 
 Can easily be extended/generalized to all collection types.
 
