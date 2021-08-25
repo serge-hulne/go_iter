@@ -33,7 +33,7 @@ func input() Chan {
 	return persons_chan
 }
 
-func main_generic() {
+func main() {
 
 	input_channel := input()
 
