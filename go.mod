@@ -1,4 +1,4 @@
-module iter_generic
+module go_iter
 
 go 1.17
 
