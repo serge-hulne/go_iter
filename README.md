@@ -58,6 +58,10 @@ Map.is one of the functions provided by go_iter.
 go doc 
 
 ```
+var Filter = Map
+    Filter : synonymous of Map() -in this model-.
+
+
 FUNCTIONS
 
 func Enumerate(in Chan) chan Pair
@@ -77,7 +81,8 @@ func Iterable_from_array(array []Generic) Chan
     Creates a channel from a slice of data of tye [] interface{}
 
 func Map(in Chan, cb FilterCallback) Chan
-    Maps input channel in to output channel out
+    Maps input channel in to output channel out using callback 'cb' of type:
+    'ReduceCallback'
 
 func Skip(in Chan, n int) Chan
     Every : Skips N item from input channel (backpressure management) Ex:
@@ -88,13 +93,16 @@ func Slice(in Chan, nmin, nmax int) Chan
 
 func Take(in Chan, nmax int) Chan
     Takes the 'nmax' fist entries form 'in'
-
-
     
+
+
 TYPES
 
 type Chan chan Generic
-    models a Stream of data (as a channel of Generics
+    models a Stream of data (as a channel of Generics)    
+
+type FilterCallback func(Chan, Chan) Chan
+    Type of callack func required by Filter() and Map()
 
 type Generic interface{}
     Alias for inerface{}
@@ -107,8 +115,5 @@ type Pair struct {
 
 type ReduceCallback func(Chan) Generic
     Type of callack func required by Reduce()
-    
-type FilterCallback func(Chan, Chan) Chan
-    Type of callack func required by Filter() and Map()
 
 ```
