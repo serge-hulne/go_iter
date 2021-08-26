@@ -61,7 +61,7 @@ go doc
 FUNCTIONS
 
 func Enumerate(in Chan) chan Pair
-    Lits the elements from 'in' ino 'out' with an index (as a 'Pair')
+    Lists the elements from 'in' ino 'out' with an index (as a 'Pair')
 
 func Range(nmax int) chan int
     Iterable channel of integers < nmax: Emulates 'range(nmax)' from Python
