@@ -23,10 +23,58 @@ func Map(in Chan, cb FilterCallback) Chan {
 	return out
 }
 
+//
+func Iterable_from_array(array []Generic) Chan {
+	out := make(Chan)
+	go func() {
+		defer close(out)
+		for _, x := range array {
+			out <- x
+		}
+	}()
+	return out
+}
+
+//
 var Filter = Map
 
 //
-func Reduce(in Chan, cb ReduceCallback) Generic {
+func Every(in Chan, n int) Chan {
+	out := make(Chan)
+	go func() {
+		defer close(out)
+		index := 0
+		for x := range in {
+			if index%n == 0 {
+				out <- x
+				index = 0
+			}
+			index++
+		}
+	}()
+	return out
+}
+
+//
+func Skip(in Chan, n int) Chan {
+	out := make(Chan)
+	go func() {
+		defer close(out)
+		index := 0
+		n++
+		for x := range in {
+			if index == n || index == 0 {
+				out <- x
+				index = 0
+			}
+			index++
+		}
+	}()
+	return out
+}
+
+//
+func Reduce(in Chan, cb ReduceCallback) interface{} {
 	word := cb(in)
 	return word
 }
@@ -41,7 +89,30 @@ func Take(in Chan, nmax int) Chan {
 			index++
 			if index <= nmax {
 				out <- i
+			} else {
+				break
 			}
+		}
+	}()
+	return out
+}
+
+//
+func Slice(in Chan, nmin, nmax int) Chan {
+	out := make(Chan)
+	go func() {
+		defer close(out)
+		index := 0
+		for i := range in {
+			if index < nmin {
+				index++
+				continue
+			} else if index <= nmax && index >= nmin {
+				out <- i
+			} else if index > nmax {
+				break
+			}
+			index++
 		}
 	}()
 	return out
@@ -72,6 +143,3 @@ func Range(nmax int) chan int {
 	}()
 	return out
 }
-
-// func Slice(int n, int m) {
-// }
