@@ -53,3 +53,25 @@ Map.is one of the functions provided by go_iter.
 		fmt.Printf("Elector --> %v\n", person.(Person))
 	}
 ```
+
+
+go doc 
+
+```
+type Generic interface{}
+type Chan chan Generic
+type Pair struct{ ... 
+type FilterCallback func(Chan, Chan) Chan
+type ReduceCallback func(Chan) Generic
+
+func Enumerate(in Chan) chan Pair
+func Range(nmax int) chan int
+func Reduce(in Chan, cb ReduceCallback) interface{}
+func Every(in Chan, n int) Chan
+func Iterable_from_array(array []Generic) Chan
+func Map(in Chan, cb FilterCallback) Chan
+func Skip(in Chan, n int) Chan
+func Slice(in Chan, nmin, nmax int) Chan
+func Take(in Chan, nmax int) Chan
+
+```
