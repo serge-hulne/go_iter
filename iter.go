@@ -18,7 +18,8 @@ type FilterCallback func(Chan, Chan) Chan
 // Type of callack func required by Reduce()
 type ReduceCallback func(Chan) Generic
 
-// Maps input channel in to output channel out
+// Maps input channel in to output channel out using
+// callback 'cb' of type: 'ReduceCallback'
 func Map(in Chan, cb FilterCallback) Chan {
 	out := make(Chan)
 	go func() {
@@ -125,7 +126,7 @@ func Slice(in Chan, nmin, nmax int) Chan {
 	return out
 }
 
-//  Lits the elements from 'in' ino 'out' with an index (as a 'Pair')
+//  Lists the elements from 'in' ino 'out' with an index (as a 'Pair')
 func Enumerate(in Chan) chan Pair {
 	out := make(chan Pair)
 	go func() {
