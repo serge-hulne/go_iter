@@ -69,12 +69,6 @@ func Range(nmax int) chan int
 func Reduce(in Chan, cb ReduceCallback) interface{}
     Reduce (as in other functional programming schemes)
 
-
-TYPES
-
-type Chan chan Generic
-    models a Stream of data (as a channel of Generics)
-
 func Every(in Chan, n int) Chan
     Every : Take every in N item from input channel (backpressure management)
     Ex: Every(in, 2) takes every second item from 'in, put sit into into 'out'
@@ -95,8 +89,12 @@ func Slice(in Chan, nmin, nmax int) Chan
 func Take(in Chan, nmax int) Chan
     Takes the 'nmax' fist entries form 'in'
 
-type FilterCallback func(Chan, Chan) Chan
-    Type of callack func required by Filter() and Map()
+
+    
+TYPES
+
+type Chan chan Generic
+    models a Stream of data (as a channel of Generics
 
 type Generic interface{}
     Alias for inerface{}
@@ -109,5 +107,8 @@ type Pair struct {
 
 type ReduceCallback func(Chan) Generic
     Type of callack func required by Reduce()
+    
+type FilterCallback func(Chan, Chan) Chan
+    Type of callack func required by Filter() and Map()
 
 ```
