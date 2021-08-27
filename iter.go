@@ -29,7 +29,12 @@ func Map(in Chan, cb FilterCallback) Chan {
 	return out
 }
 
-// Creates a channel from a slice of data of tye [] interface{}
+type Generator interface {
+	Next() Generic
+	HasNext() bool
+}
+
+// Creates an Iterable (channel) from a slice of data of tye [] interface{}
 func Iterable_from_array(array []Generic) Chan {
 	out := make(Chan)
 	go func() {
@@ -41,7 +46,19 @@ func Iterable_from_array(array []Generic) Chan {
 	return out
 }
 
-/// Filter : synonymous of Map() -in this model-.
+// Creates a Iterable (channel) from generator interface
+func Iterable_from_generator(gen Generator) Chan {
+	out := make(Chan)
+	go func() {
+		defer close(out)
+		for gen.HasNext() {
+			out <- gen.Next()
+		}
+	}()
+	return out
+}
+
+// Filter : synonymous of Map() -in this model-.
 var Filter = Map
 
 // Every : Take every in N item from input channel (backpressure management)
