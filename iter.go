@@ -9,6 +9,13 @@ type Pair struct {
 	Value Generic
 }
 
+// Models a generator objet
+// For use in 'Iterable_from_generator'
+type Generator interface {
+	Next() Generic
+	HasNext() bool
+}
+
 // models a Stream of data (as a channel of Generics)
 type Chan chan Generic
 
@@ -27,11 +34,6 @@ func Map(in Chan, cb FilterCallback) Chan {
 		out = cb(in, out)
 	}()
 	return out
-}
-
-type Generator interface {
-	Next() Generic
-	HasNext() bool
 }
 
 // Creates an Iterable (channel) from a slice of data of tye [] interface{}
