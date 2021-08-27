@@ -6,12 +6,13 @@ var Filter = Map
     Filter : synonymous of Map() -in this model-.
 
 
+
 TYPES
 
 type Chan chan Generic
     models a Stream of data (as a channel of Generics)
     
- type Generic interface{}
+type Generic interface{}
     Alias for inerface{}
 
 type Pair struct {
@@ -27,7 +28,10 @@ type Generator interface {
 	Next() Generic
 	HasNext() bool
 }    
-    
+   Models a generator objet
+   For use in 'Iterable_from_generator'
+   
+   
     
 FUNCTIONS
 
