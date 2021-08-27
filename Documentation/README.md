@@ -1,4 +1,5 @@
 
+```
 VARIABLES
 
 var Filter = Map
@@ -69,5 +70,5 @@ func Take(in Chan, nmax int) Chan
 
 type FilterCallback func(Chan, Chan) Chan
     Type of callack func required by Filter() and Map()
-
-
+    
+```
