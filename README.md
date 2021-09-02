@@ -2,7 +2,7 @@
 Go iter tools (for iterating , mapping, filtering, reducing streams -represented as channels-)
 
 - to install : go get -u github.com/serge-hulne/go_iter 
-- Documentation : See in the Documentation directory.
+- **Documentation : See in the Documentation directory.**
 
 Defines:
 
