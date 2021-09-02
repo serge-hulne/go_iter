@@ -14,7 +14,7 @@ Defines:
 
 Can easily be extended/generalized to all collection types.
 
-See examples for more information:
+See **examples** for more information:
 
 Partial example (code snippet) :
 
