@@ -1,34 +1,35 @@
 package go_iter
 
-// Alias for inerface{}
-type Generic interface{}
+/*
+	TODO:
+
+		- From_file().
+		- From_url()
+		- Make an example for reduce().
+		- Generator (refaire ou non?)
+		- GroupBy()
+*/
+
+import (
+	"sync"
+)
 
 // Models a pair {index, Value}
-type Pair struct {
+type Pair[T comparable] struct {
 	Index int
-	Value Generic
+	Value T
 }
-
-// Models a generator objet
-// For use in 'Iterable_from_generator'
-type Generator interface {
-	Next() Generic
-	HasNext() bool
-}
-
-// models a Stream of data (as a channel of Generics)
-type Chan chan Generic
 
 // Type of callack func required by Filter() and Map()
-type FilterCallback func(Chan, Chan) Chan
+type FilterCallback[T comparable] func(chan T, chan T) chan T
 
 // Type of callack func required by Reduce()
-type ReduceCallback func(Chan) Generic
+type ReduceCallback[T comparable] func(chan T) T
 
 // Maps input channel in to output channel out using
 // callback 'cb' of type: 'ReduceCallback'
-func Map(in Chan, cb FilterCallback) Chan {
-	out := make(Chan)
+func Map[T comparable](in chan T, cb FilterCallback[T]) chan T {
+	out := make(chan T)
 	go func() {
 		defer close(out)
 		out = cb(in, out)
@@ -36,9 +37,18 @@ func Map(in Chan, cb FilterCallback) Chan {
 	return out
 }
 
-// Creates an Iterable (channel) from a slice of data of tye [] interface{}
-func Iterable_from_array(array []Generic) Chan {
-	out := make(Chan)
+func Filter[T comparable](in chan T, cb FilterCallback[T]) chan T {
+	out := make(chan T)
+	go func() {
+		defer close(out)
+		out = cb(in, out)
+	}()
+	return out
+}
+
+// Creates an Iterable (channel) from a slice of data of type [T]
+func Iterable_from_array[T comparable](array []T) chan T {
+	out := make(chan T)
 	go func() {
 		defer close(out)
 		for _, x := range array {
@@ -48,25 +58,10 @@ func Iterable_from_array(array []Generic) Chan {
 	return out
 }
 
-// Creates a Iterable (channel) from generator interface
-func Iterable_from_generator(gen Generator) Chan {
-	out := make(Chan)
-	go func() {
-		defer close(out)
-		for gen.HasNext() {
-			out <- gen.Next()
-		}
-	}()
-	return out
-}
-
-// Filter : synonymous of Map() -in this model-.
-var Filter = Map
-
 // Every : Take every in N item from input channel (backpressure management)
 // Ex: Every(in, 2) takes every second item from 'in, put sit into into 'out'
-func Every(in Chan, n int) Chan {
-	out := make(Chan)
+func Every[T comparable](in chan T, n int) chan T {
+	out := make(chan T)
 	go func() {
 		defer close(out)
 		index := 0
@@ -83,8 +78,8 @@ func Every(in Chan, n int) Chan {
 
 // Every : Skips  N item from input channel (backpressure management)
 // Ex: Every(in, 2) skips 2 items after every item read from 'in'
-func Skip(in Chan, n int) Chan {
-	out := make(Chan)
+func Skip[T comparable](in chan T, n int) chan T {
+	out := make(chan T)
 	go func() {
 		defer close(out)
 		index := 0
@@ -101,14 +96,14 @@ func Skip(in Chan, n int) Chan {
 }
 
 // Reduce (as in other functional programming schemes)
-func Reduce(in Chan, cb ReduceCallback) interface{} {
+func Reduce[T comparable](in chan T, cb ReduceCallback[T]) T {
 	word := cb(in)
 	return word
 }
 
 // Takes the 'nmax' fist entries form 'in'
-func Take(in Chan, nmax int) Chan {
-	out := make(Chan)
+func Take[T comparable](in chan T, nmax int) chan T {
+	out := make(chan T)
 	go func() {
 		defer close(out)
 		index := 0
@@ -125,8 +120,8 @@ func Take(in Chan, nmax int) Chan {
 }
 
 // Takes a slice [nmin, nmax] from 'in' into 'out'
-func Slice(in Chan, nmin, nmax int) Chan {
-	out := make(Chan)
+func Slice[T comparable](in chan T, nmin, nmax int) chan T {
+	out := make(chan T)
 	go func() {
 		defer close(out)
 		index := 0
@@ -146,13 +141,13 @@ func Slice(in Chan, nmin, nmax int) Chan {
 }
 
 //  Lists the elements from 'in' ino 'out' with an index (as a 'Pair')
-func Enumerate(in Chan) chan Pair {
-	out := make(chan Pair)
+func Enumerate[T comparable](in chan T) chan Pair[T] {
+	out := make(chan Pair[T])
 	go func() {
 		defer close(out)
 		index := 0
 		for i := range in {
-			out <- Pair{index, i}
+			out <- Pair[T]{index, i}
 			index++
 		}
 	}()
@@ -170,3 +165,36 @@ func Range(nmax int) chan int {
 	}()
 	return out
 }
+
+// ---
+
+type ParallelCallback[T any] func(chan T, chan Result, int, *sync.WaitGroup)
+
+type Result struct {
+	id  int
+	val int
+}
+
+func Worker(in chan int, out chan Result, id int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for item := range in {
+		item *= 2 // returns the double of the input value (Bogus handling of data)
+		out <- Result{id, item}
+	}
+}
+
+func Run_parallel(n_workers int, in chan int, out chan Result, Worker ParallelCallback[int]) {
+	go func() {
+		wg := sync.WaitGroup{}
+		defer close(out) // close the output channel when all tasks are completed
+		for id := 0; id < n_workers; id++ {
+			wg.Add(1)
+			go Worker(in, out, id, &wg)
+		}
+		wg.Wait() // wait for all workers to complete their tasks *and* trigger the -differed- close(out)
+	}()
+}
+
+const (
+	NW = 8
+)
