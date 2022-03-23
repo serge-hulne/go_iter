@@ -32,7 +32,7 @@ Map.is one of the functions provided by go_iter.
 	input_channel := input()
 
 	for item := range input_channel {
-		fmt.Printf("%v, %v\n", item.(Person).Name, item.(Person).Age)
+		fmt.Printf("%v, %v\n", item.Name, item.Age)
 	}
 
 	fmt.Println("- - -")
@@ -51,7 +51,7 @@ Map.is one of the functions provided by go_iter.
 	electors := Map(input_channel, cb)
 
 	for person := range electors {
-		fmt.Printf("Elector --> %v\n", person.(Person))
+		fmt.Printf("Elector --> %v\n", person)
 	}
 ```
 
