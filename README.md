@@ -21,7 +21,8 @@ Partial example (code snippet) :
 In the example, data coming from an input channel are mapped/filtered, using Map(), to an output channel.
 Map.is one of the functions provided by go_iter.
 
-```	// Callbacks:
+```	
+// Callbacks:
 	filter_even := func(c1, c2 chan int) chan int {
 		for item := range c1 {
 			if item%2 == 0 {
