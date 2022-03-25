@@ -6,13 +6,9 @@ package go_iter
 		- From_file().
 		- From_url()
 		- Make an example for reduce().
-		- Generator (refaire ou non?)
 		- GroupBy()
 */
 
-import (
-	"sync"
-)
 
 // Models a pair {index, Value}
 type Pair[T comparable] struct {
