@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	. "go_iter"
-
-	//. "github.com/serge-hulne/go_iter"
+	
+	. "github.com/serge-hulne/go_iter"
 
 	"strings"
 )
