@@ -56,4 +56,16 @@ Map.is one of the functions provided by go_iter.
 	}
 ```
 
+Alternatively, the callbacks can be defined directly in the Map or Filter iterator (JavaScript style):
+
+```
+	even := Filter(generated, func(c1, c2 chan int) chan int {
+		for item := range c1 {
+			if item%2 == 0 {
+				c2 <- item
+			}
+		}
+		return c2
+	})
+```
 
