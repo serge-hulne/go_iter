@@ -21,37 +21,37 @@ Partial example (code snippet) :
 In the example, data coming from an input channel are mapped/filtered, using Map(), to an output channel.
 Map.is one of the functions provided by go_iter.
 
-```
-	//... User defined type
-	type Person struct {
-		Name string
-		Age  int
-	}
-	
-	//... Send list of "Persons in a channel"
-	input_channel := input()
-
-	for item := range input_channel {
-		fmt.Printf("%v, %v\n", item.Name, item.Age)
-	}
-
-	fmt.Println("- - -")
-	
-	//... Refresh channel
-	input_channel = input()
-
-	cb := func(c1, c2 Chan) Chan {
-		for person := range c1 {
-			//... Some fitering action here:
-			c2 <- filtered_item
+```	// Callbacks:
+	filter_even := func(c1, c2 chan int) chan int {
+		for item := range c1 {
+			if item%2 == 0 {
+				c2 <- item
+			}
 		}
 		return c2
 	}
 
-	electors := Map(input_channel, cb)
+	map_to_square := func(c1, c2 chan int) chan int {
+		for item := range c1 {
+			c2 <- item * item
+		}
+		return c2
+	}
 
-	for person := range electors {
-		fmt.Printf("Elector --> %v\n", person)
+	// Data
+	nums := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+
+	// Data -> iterator:
+	fmt.Println("- - -")
+	generated := Iterable_from_array(nums)
+
+	// Chaining iterators:
+	even := Filter(generated, filter_even)
+	even_and_squared := Map(even, map_to_square)
+
+	// Displaying results:
+	for item := range even_and_squared {
+		fmt.Printf("Gen: %#v\n", item)
 	}
 ```
 
