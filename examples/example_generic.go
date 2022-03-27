@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	
-	. "github.com/serge-hulne/go_iter"
 
 	"strings"
+
+	. "github.com/serge-hulne/go_iter"
 )
 
 type Person struct {
@@ -42,7 +42,7 @@ func main() {
 	fmt.Println("- - -")
 	input_channel = input()
 
-	cb := func(c1, c2 chan Person) chan Person {
+	cb := func(c1, c2 chan Person) (error, chan Person) {
 		for person := range c1 {
 			if person.Age > 18 {
 				p := Person{
@@ -51,44 +51,68 @@ func main() {
 				c2 <- p
 			}
 		}
-		return c2
+		//return errors.New("XXX"), c2
+		return nil, c2
 	}
 
-	electors := Filter(input_channel, cb)
+	electors := Map(input_channel, cb)
 
 	for person := range electors {
 		fmt.Printf("Elector --> %v\n", person)
 	}
 
+	// Callbacks:
+
+	map_to_square := func(c1, c2 chan int) (error, chan int) {
+		for item := range c1 {
+			c2 <- item * item
+		}
+		return nil, c2
+	}
+
+	// Data
 	nums := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 
+	// Data -> iterator:
 	fmt.Println("- - -")
-	gen := Iterable_from_array(nums)
+	generated := Iterable_from_array(nums)
 
-	for item := range gen {
+	// Chaining iterators:
+	even := Map(generated, func(c1, c2 chan int) (error, chan int) {
+		for item := range c1 {
+			if item%2 == 0 {
+				c2 <- item
+			}
+		}
+		return nil, c2
+	})
+	even_and_squared := Map(even, map_to_square)
+
+	// Displaying results:
+	for item := range even_and_squared {
 		fmt.Printf("Gen: %#v\n", item)
 	}
 
 	fmt.Println("- - -")
-	gen = Iterable_from_array(nums)
+	generated = Iterable_from_array(nums)
 
-	every := Every(gen, 2)
+	every := Every(generated, 2)
 	for item := range every {
 		fmt.Printf("Every: %#v\n", item)
 	}
 
 	fmt.Println("- - -")
-	gen = Iterable_from_array(nums)
+	generated = Iterable_from_array(nums)
 
-	skipped := Skip(gen, 2)
+	skipped := Skip(generated, 2)
 	for item := range skipped {
 		fmt.Printf("Skipped: %#v\n", item)
 	}
 
 	fmt.Println("- - -")
-	gen = Iterable_from_array(nums)
+	generated = Iterable_from_array(nums)
 
-	slice := Slice(gen, 4, 5)
+	slice := Slice(generated, 4, 5)
 	for item := range slice {
 		fmt.Printf("Slice: %#v\n", item)
 	}
