@@ -1,5 +1,9 @@
 package go_iter
 
+import (
+	"log"
+)
+
 /*
 	TODO:
 
@@ -9,7 +13,6 @@ package go_iter
 		- GroupBy()
 */
 
-
 // Models a pair {index, Value}
 type Pair[T comparable] struct {
 	Index int
@@ -17,10 +20,10 @@ type Pair[T comparable] struct {
 }
 
 // Type of callack func required by Filter() and Map()
-type FilterCallback[T comparable] func(chan T, chan T) chan T
+type FilterCallback[T comparable] func(chan T, chan T) (error, chan T)
 
 // Type of callack func required by Reduce()
-type ReduceCallback[T comparable] func(chan T) T
+type ReduceCallback[T comparable] func(chan T) (error, T)
 
 // Maps input channel in to output channel out using
 // callback 'cb' of type: 'ReduceCallback'
@@ -28,19 +31,23 @@ func Map[T comparable](in chan T, cb FilterCallback[T]) chan T {
 	out := make(chan T)
 	go func() {
 		defer close(out)
-		out = cb(in, out)
+		var e error
+		e, out = cb(in, out)
+		if e != nil {
+			log.Panicf("Encountered error: %s\n", e)
+		}
 	}()
 	return out
 }
 
-func Filter[T comparable](in chan T, cb FilterCallback[T]) chan T {
-	out := make(chan T)
-	go func() {
-		defer close(out)
-		out = cb(in, out)
-	}()
-	return out
-}
+// func Filter[T comparable](in chan T, cb FilterCallback[T]) chan T {
+// 	out := make(chan T)
+// 	go func() {
+// 		defer close(out)
+// 		out = cb(in, out)
+// 	}()
+// 	return out
+// }
 
 // Creates an Iterable (channel) from a slice of data of type [T]
 func Iterable_from_array[T comparable](array []T) chan T {
@@ -93,7 +100,11 @@ func Skip[T comparable](in chan T, n int) chan T {
 
 // Reduce (as in other functional programming schemes)
 func Reduce[T comparable](in chan T, cb ReduceCallback[T]) T {
-	word := cb(in)
+	var e error
+	e, word := cb(in)
+	if e != nil {
+		log.Fatalf("Encountered error: %s\n", e)
+	}
 	return word
 }
 
