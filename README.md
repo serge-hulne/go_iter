@@ -22,21 +22,13 @@ In the example, data coming from an input channel are mapped/filtered, using Map
 Map.is one of the functions provided by go_iter.
 
 ```	
-	// Callbacks:
-	filter_even := func(c1, c2 chan int) chan int {
-		for item := range c1 {
-			if item%2 == 0 {
-				c2 <- item
-			}
-		}
-		return c2
-	}
+// Callbacks:
 
-	map_to_square := func(c1, c2 chan int) chan int {
+	map_to_square := func(c1, c2 chan int) (error, chan int) {
 		for item := range c1 {
 			c2 <- item * item
 		}
-		return c2
+		return nil, c2
 	}
 
 	// Data
@@ -47,7 +39,14 @@ Map.is one of the functions provided by go_iter.
 	generated := Iterable_from_array(nums)
 
 	// Chaining iterators:
-	even := Filter(generated, filter_even)
+	even := Map(generated, func(c1, c2 chan int) (error, chan int) {
+		for item := range c1 {
+			if item%2 == 0 {
+				c2 <- item
+			}
+		}
+		return nil, c2
+	})
 	even_and_squared := Map(even, map_to_square)
 
 	// Displaying results:
