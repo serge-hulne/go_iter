@@ -1,5 +1,6 @@
 
 ```
+
 FUNCTIONS
 
 func Enumerate[T comparable](in chan T) chan Pair[T]
@@ -9,7 +10,6 @@ func Every[T comparable](in chan T, n int) chan T
     Every : Take every in N item from input channel (backpressure management)
     Ex: Every(in, 2) takes every second item from 'in, put sit into into 'out'
 
-func Filter[T comparable](in chan T, cb FilterCallback[T]) chan T
 func Iterable_from_array[T comparable](array []T) chan T
     Creates an Iterable (channel) from a slice of data of type [T]
 
@@ -36,7 +36,7 @@ func Take[T comparable](in chan T, nmax int) chan T
 
 TYPES
 
-type FilterCallback[T comparable] func(chan T, chan T) chan T
+type FilterCallback[T comparable] func(chan T, chan T) (error, chan T)
     Type of callack func required by Filter() and Map()
 
 type Pair[T comparable] struct {
@@ -45,7 +45,7 @@ type Pair[T comparable] struct {
 }
     Models a pair {index, Value}
 
-type ReduceCallback[T comparable] func(chan T) T
+type ReduceCallback[T comparable] func(chan T) (error, T)
     Type of callack func required by Reduce()
     
 ```
