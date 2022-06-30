@@ -1,122 +1,107 @@
+```
 package main
 
 import (
 	"fmt"
-
-	"strings"
-
-	. "github.com/serge-hulne/go_iter"
+	. ""
 )
 
-type Person struct {
-	Name string
-	Age  int
+type Counter struct {
+	Value   int
+	HasNext bool
 }
 
-// - - -
-
-func input() chan Person {
-
-	persons := []Person{
-		{"Joe", 10},
-		{"Jane", 40},
-		{"Jim", 50},
-		{"John", 60},
+func (c *Counter) Next() {
+	if c.Value < 10 {
+		c.Value++
+		c.HasNext = true
+	} else {
+		c.HasNext = false
 	}
-
-	persons_chan := Iterable_from_array(persons)
-
-	return persons_chan
 }
-
-// - - -
 
 func main() {
 
-	input_channel := input()
+	c := Counter{0, true}
 
-	for item := range input_channel {
-		fmt.Printf("%v, %v\n", item.Name, item.Age)
+	it := Generator_to_Iterator(c)
+
+	for v := range it {
+		fmt.Printf("%d ", v)
 	}
 
-	fmt.Println("- - -")
-	input_channel = input()
+	// - - -
 
-	cb := func(c1, c2 chan Person) (error, chan Person) {
-		for person := range c1 {
-			if person.Age > 18 {
-				p := Person{
-					strings.ToUpper(person.Name),
-					person.Age}
-				c2 <- p
-			}
-		}
-		//return errors.New("XXX"), c2
-		return nil, c2
-	}
+	it = Generator_to_Iterator(c)
 
-	electors := Map(input_channel, cb)
-
-	for person := range electors {
-		fmt.Printf("Elector --> %v\n", person)
-	}
-
-	// Callbacks:
-
-	map_to_square := func(c1, c2 chan int) (error, chan int) {
-		for item := range c1 {
-			c2 <- item * item
-		}
-		return nil, c2
-	}
-
-	// Data
-	nums := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
-
-	// Data -> iterator:
-	fmt.Println("- - -")
-	generated := Iterable_from_array(nums)
-
-	// Chaining iterators:
-	even := Map(generated, func(c1, c2 chan int) (error, chan int) {
-		for item := range c1 {
-			if item%2 == 0 {
-				c2 <- item
-			}
-		}
-		return nil, c2
+	it1 := Map(it, func(x int) int {
+		return 2 * x
 	})
-	even_and_squared := Map(even, map_to_square)
 
-	// Displaying results:
-	for item := range even_and_squared {
-		fmt.Printf("Gen: %#v\n", item)
+	for v := range it1 {
+		fmt.Printf("%d ", v)
 	}
 
-	fmt.Println("- - -")
-	generated = Iterable_from_array(nums)
+	println()
 
-	every := Every(generated, 2)
-	for item := range every {
-		fmt.Printf("Every: %#v\n", item)
+	// - -  -
+
+	println("\n- - -")
+
+	it = Generator_to_Iterator(c)
+
+	it1 = Filter(it, func(x int) bool {
+		return x%2 == 0
+	})
+
+	for v := range it1 {
+		fmt.Printf("%d ", v)
 	}
 
-	fmt.Println("- - -")
-	generated = Iterable_from_array(nums)
+	// - - -
 
-	skipped := Skip(generated, 2)
-	for item := range skipped {
-		fmt.Printf("Skipped: %#v\n", item)
+	println("\n- - -")
+
+	it = Generator_to_Iterator(c)
+	it1 = Filter(it, func(x int) bool {
+		return x%2 == 0
+	})
+
+	sum := Reduce(it1, func(x int, y int) int {
+		return x + y
+	})
+
+	fmt.Printf("Sum = %d", sum)
+
+	println("\n- - -")
+
+	it = Generator_to_Iterator(c)
+	every := Every(it, 3)
+
+	for v := range every {
+		fmt.Printf("%d ", v)
 	}
 
-	fmt.Println("- - -")
-	generated = Iterable_from_array(nums)
+	println("\n- - -")
 
-	slice := Slice(generated, 4, 5)
-	for item := range slice {
-		fmt.Printf("Slice: %#v\n", item)
+	it = Generator_to_Iterator(c)
+
+	skipped := Skip(it, 4)
+
+	for v := range skipped {
+		fmt.Printf("%d ", v)
 	}
 
-	fmt.Println("- - -")
+	println("\n- - -")
+
+	it = Generator_to_Iterator(c)
+
+	top := Take(it, 5)
+
+	for v := range top {
+		fmt.Printf("%d ", v)
+	}
 
 }
+
+```
