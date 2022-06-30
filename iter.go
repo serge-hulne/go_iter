@@ -27,7 +27,7 @@ func Iterable_from_Array[T comparable](array []T) chan T {
 }
 
 // Returns the values from a generator via a channel
-func Generator_to_Iterator(c Counter) chan int {
+func Generator_to_Iterator(c T) chan int {
 	ch := make(chan int)
 	go func() {
 		defer close(ch)
