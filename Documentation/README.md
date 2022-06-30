@@ -1,7 +1,5 @@
 ```
 
-package go_iter // import "go_iter"
-
 
 FUNCTIONS
 
@@ -15,7 +13,7 @@ func Every[T comparable](in chan T, n int) chan T
 func Filter[T any](ch1 chan T, f func(T) bool) chan T
     Filters input channel in to output channel out using callback
 
-func Generator_to_Iterator(c Counter) chan int
+func Generator_to_Iterator[U any](c Generator[U]) chan U
     Returns the values from a generator via a channel
 
 func Iterable_from_Array[T comparable](array []T) chan T
@@ -43,11 +41,21 @@ func Take[T comparable](in chan T, nmax int) chan T
 TYPES
 
 type Counter struct {
-	Value   int
-	HasNext bool
+	// Has unexported fields.
 }
+    Implements the interface generator
+
+func (c *Counter) HasNext() bool
 
 func (c *Counter) Next()
+
+func (c *Counter) Value() int
+
+type Generator[U any] interface {
+	Next()
+	HasNext() bool
+	Value() U
+}
 
 type Pair[T comparable] struct {
 	Index int
@@ -55,3 +63,5 @@ type Pair[T comparable] struct {
 }
     Models a pair {index, Value}
 
+
+```
