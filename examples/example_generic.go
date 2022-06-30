@@ -3,7 +3,7 @@ package main
 
 import (
 	"fmt"
-	. ""
+	. "github.com/serge-hulne/go_iter"
 )
 
 type Counter struct {
