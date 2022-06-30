@@ -1,3 +1,5 @@
+```
+
 package go_iter // import "go_iter"
 
 
@@ -19,7 +21,6 @@ func Generator_to_Iterator(c Counter) chan int
 func Iterable_from_Array[T comparable](array []T) chan T
     Creates an Iterable (channel) from a Slice / Array of data of type [T]
 
-```
 func Map[T any](ch1 chan T, f func(T) T) chan T
     Maps input channel in to output channel out using callback
 
