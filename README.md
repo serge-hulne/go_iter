@@ -37,7 +37,7 @@ Map.is one of the functions provided by go_iter.
 
 	// -> 0, 2, 4, 6, 8, 10
 
-	// Mapping all the elements of 'even' to it's square value:
+	// Mapping all the elements of 'even' to it's squared value:
 	even_and_squared := Map(even, func(x int) int {
 		return x * x
 	})
