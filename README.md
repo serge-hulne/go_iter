@@ -21,50 +21,34 @@ Partial example (code snippet) :
 In the example, data coming from an input channel are mapped/filtered, using Map(), to an output channel.
 Map.is one of the functions provided by go_iter.
 
-```	
-// Callbacks:
-
-	map_to_square := func(c1, c2 chan int) (error, chan int) {
-		for item := range c1 {
-			c2 <- item * item
-		}
-		return nil, c2
-	}
-
+```
 	// Data
-	nums := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	nums := []int{0, 1, 2, 3, 4, 5}
 
 	// Data -> iterator:
-	fmt.Println("- - -")
-	generated := Iterable_from_array(nums)
+	generated := Iterable_from_Array(nums)
 
-	// Chaining iterators:
-	even := Map(generated, func(c1, c2 chan int) (error, chan int) {
-		for item := range c1 {
-			if item%2 == 0 {
-				c2 <- item
-			}
-		}
-		return nil, c2
+	// -> 0, 1, 2, 3, 4, 5
+
+	// Mapping x -> 2 * x for all elements of the iterator:
+	even := Map(generated, func(x int) int {
+		return 2 * x
 	})
-	even_and_squared := Map(even, map_to_square)
+
+	// -> 0, 2, 4, 6, 8, 10
+
+	// Mapping all the elements of 'even' to it's square value:
+	even_and_squared := Map(even, func(x int) int {
+		return x * x
+	})
+
+	// -> 0, 4, 16, 36, 64, 100
+
+	println("Final")
 
 	// Displaying results:
 	for item := range even_and_squared {
-		fmt.Printf("Gen: %#v\n", item)
+		fmt.Printf("%#v ", item)
 	}
-```
-
-Alternatively, the callbacks can be defined directly in the Map or Filter iterator (JavaScript style):
-
-```
-	even := Filter(generated, func(c1, c2 chan int) chan int {
-		for item := range c1 {
-			if item%2 == 0 {
-				c2 <- item
-			}
-		}
-		return c2
-	})
 ```
 
