@@ -1,4 +1,4 @@
-package go_iter
+package main
 
 /*
 	TODO:
@@ -26,13 +26,20 @@ func Iterable_from_Array[T comparable](array []T) chan T {
 	return out
 }
 
+//
+type Generator[U any] interface {
+	Next()
+	HasNext() bool
+	Value() U
+}
+
 // Returns the values from a generator via a channel
-func Generator_to_Iterator(c T) chan int {
-	ch := make(chan int)
+func Generator_to_Iterator[U any](c Generator[U]) chan U {
+	ch := make(chan U)
 	go func() {
 		defer close(ch)
-		for c.HasNext {
-			ch <- c.Value
+		for c.HasNext() {
+			ch <- c.Value()
 			c.Next()
 		}
 	}()
