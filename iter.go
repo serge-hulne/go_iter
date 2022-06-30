@@ -1,15 +1,10 @@
 package go_iter
 
-import (
-	"log"
-)
-
 /*
 	TODO:
 
 		- From_file().
 		- From_url()
-		- Make an example for reduce().
 		- GroupBy()
 */
 
@@ -19,38 +14,8 @@ type Pair[T comparable] struct {
 	Value T
 }
 
-// Type of callack func required by Filter() and Map()
-type FilterCallback[T comparable] func(chan T, chan T) (error, chan T)
-
-// Type of callack func required by Reduce()
-type ReduceCallback[T comparable] func(chan T) (error, T)
-
-// Maps input channel in to output channel out using
-// callback 'cb' of type: 'ReduceCallback'
-func Map[T comparable](in chan T, cb FilterCallback[T]) chan T {
-	out := make(chan T)
-	go func() {
-		defer close(out)
-		var e error
-		e, out = cb(in, out)
-		if e != nil {
-			log.Panicf("Encountered error: %s\n", e)
-		}
-	}()
-	return out
-}
-
-// func Filter[T comparable](in chan T, cb FilterCallback[T]) chan T {
-// 	out := make(chan T)
-// 	go func() {
-// 		defer close(out)
-// 		out = cb(in, out)
-// 	}()
-// 	return out
-// }
-
-// Creates an Iterable (channel) from a slice of data of type [T]
-func Iterable_from_array[T comparable](array []T) chan T {
+// Creates an Iterable (channel) from a Slice / Array of data of type [T]
+func Iterable_from_Array[T comparable](array []T) chan T {
 	out := make(chan T)
 	go func() {
 		defer close(out)
@@ -59,6 +24,54 @@ func Iterable_from_array[T comparable](array []T) chan T {
 		}
 	}()
 	return out
+}
+
+// Returns the values from a generator via a channel
+func Generator_to_Iterator(c Counter) chan int {
+	ch := make(chan int)
+	go func() {
+		defer close(ch)
+		for c.HasNext {
+			ch <- c.Value
+			c.Next()
+		}
+	}()
+	return ch
+}
+
+// Maps input channel in to output channel out using callback
+func Map[T any](ch1 chan T, f func(T) T) chan T {
+	ch2 := make(chan T)
+	go func() {
+		defer close(ch2)
+		for x := range ch1 {
+			ch2 <- f(x)
+		}
+	}()
+	return ch2
+}
+
+// Filters input channel in to output channel out using callback
+func Filter[T any](ch1 chan T, f func(T) bool) chan T {
+	ch2 := make(chan T)
+	go func() {
+		defer close(ch2)
+		for x := range ch1 {
+			if f(x) {
+				ch2 <- x
+			}
+		}
+	}()
+	return ch2
+}
+
+// Reduces a list of values to a single value (functional)
+func Reduce[T any](ch1 chan T, f func(T, T) T) T {
+	var temp T
+	for x := range ch1 {
+		temp = f(temp, x)
+	}
+	return temp
 }
 
 // Every : Take every in N item from input channel (backpressure management)
@@ -79,8 +92,7 @@ func Every[T comparable](in chan T, n int) chan T {
 	return out
 }
 
-// Every : Skips  N item from input channel (backpressure management)
-// Ex: Every(in, 2) skips 2 items after every item read from 'in'
+// Skips next N items in a list
 func Skip[T comparable](in chan T, n int) chan T {
 	out := make(chan T)
 	go func() {
@@ -98,17 +110,7 @@ func Skip[T comparable](in chan T, n int) chan T {
 	return out
 }
 
-// Reduce (as in other functional programming schemes)
-func Reduce[T comparable](in chan T, cb ReduceCallback[T]) T {
-	var e error
-	e, word := cb(in)
-	if e != nil {
-		log.Fatalf("Encountered error: %s\n", e)
-	}
-	return word
-}
-
-// Takes the 'nmax' fist entries form 'in'
+// Takes the 'nmax' first entries form 'in'
 func Take[T comparable](in chan T, nmax int) chan T {
 	out := make(chan T)
 	go func() {
