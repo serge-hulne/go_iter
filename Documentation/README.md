@@ -1,6 +1,4 @@
 ```
-
-
 FUNCTIONS
 
 func Enumerate[T comparable](in chan T) chan Pair[T]
@@ -62,6 +60,5 @@ type Pair[T comparable] struct {
 	Value T
 }
     Models a pair {index, Value}
-
 
 ```
