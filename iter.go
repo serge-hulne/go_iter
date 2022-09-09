@@ -9,13 +9,13 @@ package go_iter
 */
 
 // Models a pair {index, Value}
-type Pair[T comparable] struct {
+type Pair[T any] struct {
 	Index int
 	Value T
 }
 
 // Creates an Iterable (channel) from a Slice / Array of data of type [T]
-func Iterable_from_Array[T comparable](array []T) chan T {
+func Iterable_from_Array[T any](array []T) chan T {
 	out := make(chan T)
 	go func() {
 		defer close(out)
@@ -82,7 +82,7 @@ func Reduce[T any](ch1 chan T, f func(T, T) T) T {
 
 // Every : Take every in N item from input channel (backpressure management)
 // Ex: Every(in, 2) takes every second item from 'in, put sit into into 'out'
-func Every[T comparable](in chan T, n int) chan T {
+func Every[T any](in chan T, n int) chan T {
 	out := make(chan T)
 	go func() {
 		defer close(out)
@@ -99,7 +99,7 @@ func Every[T comparable](in chan T, n int) chan T {
 }
 
 // Skips next N items in a list
-func Skip[T comparable](in chan T, n int) chan T {
+func Skip[T any](in chan T, n int) chan T {
 	out := make(chan T)
 	go func() {
 		defer close(out)
@@ -117,7 +117,7 @@ func Skip[T comparable](in chan T, n int) chan T {
 }
 
 // Takes the 'nmax' first entries form 'in'
-func Take[T comparable](in chan T, nmax int) chan T {
+func Take[T any](in chan T, nmax int) chan T {
 	out := make(chan T)
 	go func() {
 		defer close(out)
@@ -135,7 +135,7 @@ func Take[T comparable](in chan T, nmax int) chan T {
 }
 
 // Takes a slice [nmin, nmax] from 'in' into 'out'
-func Slice[T comparable](in chan T, nmin, nmax int) chan T {
+func Slice[T any](in chan T, nmin, nmax int) chan T {
 	out := make(chan T)
 	go func() {
 		defer close(out)
@@ -156,7 +156,7 @@ func Slice[T comparable](in chan T, nmin, nmax int) chan T {
 }
 
 // Lists the elements from 'in' into 'out' with an index (as a 'Pair')
-func Enumerate[T comparable](in chan T) chan Pair[T] {
+func Enumerate[T any](in chan T) chan Pair[T] {
 	out := make(chan Pair[T])
 	go func() {
 		defer close(out)
