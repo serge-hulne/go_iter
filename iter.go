@@ -9,9 +9,9 @@ package go_iter
 */
 
 // Models a pair {index, Value}
-type Pair[T any] struct {
-	Index int
-	Value T
+type Pair[A, B any] struct {
+	First  A
+	Second B
 }
 
 // Creates an Iterable (channel) from a Slice / Array of data of type [T]
@@ -156,13 +156,13 @@ func Slice[T any](in chan T, nmin, nmax int) chan T {
 }
 
 // Lists the elements from 'in' into 'out' with an index (as a 'Pair')
-func Enumerate[T any](in chan T) chan Pair[T] {
-	out := make(chan Pair[T])
+func Enumerate[T any](in chan T) chan Pair[int, T] {
+	out := make(chan Pair[int, T])
 	go func() {
 		defer close(out)
 		index := 0
 		for i := range in {
-			out <- Pair[T]{index, i}
+			out <- Pair[int, T]{index, i}
 			index++
 		}
 	}()
