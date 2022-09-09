@@ -26,7 +26,6 @@ func Iterable_from_Array[T comparable](array []T) chan T {
 	return out
 }
 
-//
 type Generator[U any] interface {
 	Next()
 	HasNext() bool
@@ -47,8 +46,8 @@ func Generator_to_Iterator[U any](c Generator[U]) chan U {
 }
 
 // Maps input channel in to output channel out using callback
-func Map[T any](ch1 chan T, f func(T) T) chan T {
-	ch2 := make(chan T)
+func Map[A, B any](ch1 chan A, f func(A) B) chan B {
+	ch2 := make(chan B)
 	go func() {
 		defer close(ch2)
 		for x := range ch1 {
@@ -156,7 +155,7 @@ func Slice[T comparable](in chan T, nmin, nmax int) chan T {
 	return out
 }
 
-//  Lists the elements from 'in' ino 'out' with an index (as a 'Pair')
+// Lists the elements from 'in' into 'out' with an index (as a 'Pair')
 func Enumerate[T comparable](in chan T) chan Pair[T] {
 	out := make(chan Pair[T])
 	go func() {
