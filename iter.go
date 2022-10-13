@@ -8,6 +8,12 @@ package go_iter
 		- GroupBy()
 */
 
+// Clears iterator if not all the elements of the iteraor have been consumed
+func Clear[T any](r chan T) {
+	for _ = range r {
+	}
+}
+
 // Models a pair {index, Value}
 type Pair[A, B any] struct {
 	First  A
