@@ -62,8 +62,7 @@ func main() {
 	it1 = Filter(it, func(x int) bool {
 		return x%2 == 0
 	})
-
-	defer Clear(it1)
+	Clear(it1)
 	
 	for v := range it1 {
 		fmt.Printf("%d ", v)
