@@ -63,6 +63,8 @@ func main() {
 		return x%2 == 0
 	})
 
+	defer Clear(it1)
+	
 	for v := range it1 {
 		fmt.Printf("%d ", v)
 	}
